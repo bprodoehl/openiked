@@ -1,4 +1,4 @@
-/*	$OpenBSD: ikev2_msg.c,v 1.25 2013/03/21 04:30:14 deraadt Exp $	*/
+/*	$OpenBSD: ikev2_msg.c,v 1.28 2014/01/24 05:58:52 mikeb Exp $	*/
 
 /*
  * Copyright (c) 2010-2013 Reyk Floeter <reyk@openbsd.org>
@@ -77,7 +77,8 @@ ikev2_msg_cb(int fd, short event, void *arg)
 	    (ssize_t)sizeof(natt))
 		return;
 
-	if (socket_getport(&msg.msg_local) == IKED_NATT_PORT) {
+	if (socket_getport((struct sockaddr *)&msg.msg_local) ==
+	    IKED_NATT_PORT) {
 		if (bcmp(&natt, buf, sizeof(natt)) != 0)
 			return;
 		msg.msg_natt = 1;
@@ -258,6 +259,7 @@ ikev2_msg_send(struct iked *env, struct iked_message *msg)
 	struct ibuf		*buf = msg->msg_data;
 	u_int32_t		 natt = 0x00000000;
 	int			 isnatt = 0;
+	u_int8_t		 exchange, flags;
 	struct ike_header	*hdr;
 	struct iked_message	*m;
 
@@ -267,10 +269,12 @@ ikev2_msg_send(struct iked *env, struct iked_message *msg)
 
 	isnatt = (msg->msg_natt || (msg->msg_sa && msg->msg_sa->sa_natt));
 
+	exchange = hdr->ike_exchange;
+	flags = hdr->ike_flags;
 	log_info("%s: %s from %s to %s, %ld bytes%s", __func__,
-	    print_map(hdr->ike_exchange, ikev2_exchange_map),
-	    print_host(&msg->msg_local, NULL, 0),
-	    print_host(&msg->msg_peer, NULL, 0),
+	    print_map(exchange, ikev2_exchange_map),
+	    print_host((struct sockaddr *)&msg->msg_local, NULL, 0),
+	    print_host((struct sockaddr *)&msg->msg_peer, NULL, 0),
 	    ibuf_length(buf), isnatt ? ", NAT-T" : "");
 
 	if (isnatt) {
@@ -294,18 +298,16 @@ ikev2_msg_send(struct iked *env, struct iked_message *msg)
 		log_debug("%s: failed to copy a message", __func__);
 		return (-1);
 	}
-	m->msg_exchange = hdr->ike_exchange;
+	m->msg_exchange = exchange;
 
-	if (hdr->ike_flags & IKEV2_FLAG_RESPONSE) {
+	if (flags & IKEV2_FLAG_RESPONSE) {
 		TAILQ_INSERT_TAIL(&sa->sa_responses, m, msg_entry);
-		timer_initialize(env, &m->msg_timer,
-		    ikev2_msg_response_timeout, m);
-		timer_register(env, &m->msg_timer, IKED_RESPONSE_TIMEOUT);
+		timer_set(env, &m->msg_timer, ikev2_msg_response_timeout, m);
+		timer_add(env, &m->msg_timer, IKED_RESPONSE_TIMEOUT);
 	} else {
 		TAILQ_INSERT_TAIL(&sa->sa_requests, m, msg_entry);
-		timer_initialize(env, &m->msg_timer,
-		    ikev2_msg_retransmit_timeout, m);
-		timer_register(env, &m->msg_timer, IKED_RETRANSMIT_TIMEOUT);
+		timer_set(env, &m->msg_timer, ikev2_msg_retransmit_timeout, m);
+		timer_add(env, &m->msg_timer, IKED_RETRANSMIT_TIMEOUT);
 	}
 
 	return (0);
@@ -905,7 +907,7 @@ ikev2_msg_dispose(struct iked *env, struct iked_msgqueue *queue,
     struct iked_message *msg)
 {
 	TAILQ_REMOVE(queue, msg, msg_entry);
-	timer_deregister(env, &msg->msg_timer);
+	timer_del(env, &msg->msg_timer);
 	ikev2_msg_cleanup(env, msg);
 	free(msg);
 }
@@ -946,7 +948,7 @@ ikev2_msg_retransmit_response(struct iked *env, struct iked_sa *sa,
 		return (-1);
 	}
 
-	timer_register(env, &msg->msg_timer, IKED_RESPONSE_TIMEOUT);
+	timer_add(env, &msg->msg_timer, IKED_RESPONSE_TIMEOUT);
 	return (0);
 }
 
@@ -975,7 +977,7 @@ ikev2_msg_retransmit_timeout(struct iked *env, void *arg)
 			return;
 		}
 		/* Exponential timeout */
-		timer_register(env, &msg->msg_timer,
+		timer_add(env, &msg->msg_timer,
 		    IKED_RETRANSMIT_TIMEOUT * (2 << (msg->msg_tries++)));
 	} else {
 		log_debug("%s: retransmit limit reached", __func__);

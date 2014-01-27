@@ -1,4 +1,4 @@
-/*	$OpenBSD: policy.c,v 1.23 2013/01/08 10:38:19 reyk Exp $	*/
+/*	$OpenBSD: policy.c,v 1.29 2014/01/24 07:35:55 markus Exp $	*/
 
 /*
  * Copyright (c) 2010-2013 Reyk Floeter <reyk@openbsd.org>
@@ -22,13 +22,6 @@
 #include <sys/socket.h>
 #include <sys/uio.h>
 #include "openbsd-compat/sys-tree.h"
-
-#include <net/if.h>
-#include <netinet/in_systm.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,6 +58,8 @@ int
 policy_lookup(struct iked *env, struct iked_message *msg)
 {
 	struct iked_policy	 pol;
+	char			*s, idstr[IKED_ID_SIZE];
+
 
 	if (msg->msg_sa != NULL && msg->msg_sa->sa_policy != NULL) {
 		/* Existing SA with policy */
@@ -76,6 +71,15 @@ policy_lookup(struct iked *env, struct iked_message *msg)
 	pol.pol_af = msg->msg_peer.ss_family;
 	memcpy(&pol.pol_peer.addr, &msg->msg_peer, sizeof(msg->msg_peer));
 	memcpy(&pol.pol_local.addr, &msg->msg_local, sizeof(msg->msg_local));
+	if (msg->msg_id.id_type &&
+	    ikev2_print_id(&msg->msg_id, idstr, IKED_ID_SIZE) == 0 &&
+	    (s = strchr(idstr, '/')) != NULL) {
+		pol.pol_peerid.id_type = msg->msg_id.id_type;
+		pol.pol_peerid.id_length = strlen(s+1);
+		strlcpy(pol.pol_peerid.id_data, s+1,
+		    sizeof(pol.pol_peerid.id_data));
+		log_debug("%s: peerid '%s'", __func__, s+1);
+	}
 
 	/* Try to find a matching policy for this message */
 	if ((msg->msg_policy = policy_test(env, &pol)) != NULL)
@@ -129,6 +133,15 @@ policy_test(struct iked *env, struct iked_policy *key)
 			    &key->pol_flows)) != NULL &&
 			    (flow = RB_FIND(iked_flows, &p->pol_flows,
 			    flowkey)) == NULL) {
+				p = TAILQ_NEXT(p, pol_entry);
+				continue;
+			}
+			/* make sure the peer ID matches */
+			if (key->pol_peerid.id_type &&
+			    (key->pol_peerid.id_type != p->pol_peerid.id_type ||
+			    memcmp(key->pol_peerid.id_data,
+			    p->pol_peerid.id_data,
+			    sizeof(key->pol_peerid.id_data)) != 0)) {
 				p = TAILQ_NEXT(p, pol_entry);
 				continue;
 			}
@@ -219,8 +232,10 @@ sa_state(struct iked *env, struct iked_sa *sa, int state)
 		case IKEV2_STATE_CLOSED:
 			log_info("%s: %s -> %s from %s to %s policy '%s'",
 			    __func__, a, b,
-			    print_host(&sa->sa_peer.addr, NULL, 0),
-			    print_host(&sa->sa_local.addr, NULL, 0),
+			    print_host((struct sockaddr *)&sa->sa_peer.addr,
+			    NULL, 0),
+			    print_host((struct sockaddr *)&sa->sa_local.addr,
+			    NULL, 0),
 			    sa->sa_policy->pol_name);
 			break;
 		default:
@@ -282,6 +297,7 @@ sa_new(struct iked *env, u_int64_t ispi, u_int64_t rspi,
     u_int initiator, struct iked_policy *pol)
 {
 	struct iked_sa	*sa;
+	struct iked_sa	*old;
 	struct iked_id	*localid;
 	u_int		 diff;
 
@@ -328,7 +344,12 @@ sa_new(struct iked *env, u_int64_t ispi, u_int64_t rspi,
 		sa->sa_hdr.sh_rspi = rspi;
 
 	/* Re-insert node into the tree */
-	RB_INSERT(iked_sas, &env->sc_sas, sa);
+	old = RB_INSERT(iked_sas, &env->sc_sas, sa);
+	if (old && old != sa) {
+		log_debug("%s: duplicate ikesa", __func__);
+		sa_free(env, sa);
+		return (NULL);
+	}
 
 	return (sa);
 }
@@ -375,7 +396,7 @@ sa_address(struct iked_sa *sa, struct iked_addr *addr,
 
 	bzero(addr, sizeof(*addr));
 	addr->addr_af = peer->ss_family;
-	addr->addr_port = htons(socket_getport(peer));
+	addr->addr_port = htons(socket_getport((struct sockaddr *)peer));
 	memcpy(&addr->addr, peer, sizeof(*peer));
 	if (socket_af((struct sockaddr *)&addr->addr, addr->addr_port) == -1) {
 		log_debug("%s: invalid address", __func__);
@@ -438,6 +459,7 @@ sa_lookup(struct iked *env, u_int64_t ispi, u_int64_t rspi,
 
 		/* Validate if SPIr matches */
 		if ((sa->sa_hdr.sh_rspi != 0) &&
+		    (rspi != 0) &&
 		    (sa->sa_hdr.sh_rspi != rspi))
 			return (NULL);
 	}
@@ -448,8 +470,10 @@ sa_lookup(struct iked *env, u_int64_t ispi, u_int64_t rspi,
 static __inline int
 sa_cmp(struct iked_sa *a, struct iked_sa *b)
 {
-	if (a->sa_hdr.sh_initiator != b->sa_hdr.sh_initiator)
-		return (-2);
+	if (a->sa_hdr.sh_initiator > b->sa_hdr.sh_initiator)
+		return (-1);
+	if (a->sa_hdr.sh_initiator < b->sa_hdr.sh_initiator)
+		return (1);
 
 	if (a->sa_hdr.sh_ispi > b->sa_hdr.sh_ispi)
 		return (-1);

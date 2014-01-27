@@ -1,4 +1,4 @@
-/*	$OpenBSD: config.c,v 1.20 2013/03/21 04:30:14 deraadt Exp $	*/
+/*	$OpenBSD: config.c,v 1.24 2014/01/24 05:58:52 mikeb Exp $	*/
 
 /*
  * Copyright (c) 2010-2013 Reyk Floeter <reyk@openbsd.org>
@@ -21,13 +21,6 @@
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <sys/uio.h>
-
-#include <net/if.h>
-#include <netinet/in_systm.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -87,7 +80,7 @@ config_free_sa(struct iked *env, struct iked_sa *sa)
 {
 	(void)RB_REMOVE(iked_sas, &env->sc_sas, sa);
 
-	timer_deregister(env, &sa->sa_timer);
+	timer_del(env, &sa->sa_timer);
 
 	config_free_proposals(&sa->sa_proposals, 0);
 	config_free_childsas(env, &sa->sa_childsas, NULL, NULL);
@@ -531,7 +524,8 @@ config_getsocket(struct iked *env, struct imsg *imsg,
 	if (*sptr == NULL)
 		*sptr = sock;
 	if (*nptr == NULL &&
-	    socket_getport(&sock->sock_addr) == IKED_NATT_PORT)
+	    socket_getport((struct sockaddr *)&sock->sock_addr) ==
+	    IKED_NATT_PORT)
 		*nptr = sock;
 
 	event_set(&sock->sock_ev, sock->sock_fd,
@@ -694,7 +688,8 @@ config_getpolicy(struct iked *env, struct imsg *imsg)
 		memcpy(flow, buf + offset, sizeof(*flow));
 		offset += sizeof(*flow);
 
-		RB_INSERT(iked_flows, &pol->pol_flows, flow);
+		if (RB_INSERT(iked_flows, &pol->pol_flows, flow))
+			free(flow);
 	}
 
 	TAILQ_INSERT_TAIL(&env->sc_policies, pol, pol_entry);

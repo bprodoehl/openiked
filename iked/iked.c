@@ -1,4 +1,4 @@
-/*	$OpenBSD: iked.c,v 1.17 2013/03/21 04:30:14 deraadt Exp $	*/
+/*	$OpenBSD: iked.c,v 1.18 2013/10/24 02:55:50 deraadt Exp $	*/
 
 /*
  * Copyright (c) 2010-2013 Reyk Floeter <reyk@openbsd.org>

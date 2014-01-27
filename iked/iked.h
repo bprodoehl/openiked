@@ -1,4 +1,4 @@
-/*	$OpenBSD: iked.h,v 1.56 2013/01/08 10:38:19 reyk Exp $	*/
+/*	$OpenBSD: iked.h,v 1.65 2014/01/24 07:31:25 markus Exp $	*/
 
 /*
  * Copyright (c) 2010-2013 Reyk Floeter <reyk@openbsd.org>
@@ -242,6 +242,8 @@ struct iked_policy {
 
 	int				 pol_refcnt;
 
+	u_int8_t			 pol_certreqtype;
+
 	int				 pol_af;
 	u_int8_t			 pol_saproto;
 	u_int				 pol_ipproto;
@@ -337,8 +339,9 @@ struct iked_sahdr {
 
 struct iked_sa {
 	struct iked_sahdr		 sa_hdr;
-	u_int32_t			 sa_msgid;
-	u_int32_t			 sa_reqid;
+	u_int32_t			 sa_msgid;	/* Last request rcvd */
+	int				 sa_msgid_set;	/* msgid initialized */
+	u_int32_t			 sa_reqid;	/* Next request sent */
 
 	int				 sa_type;
 #define IKED_SATYPE_LOOKUP		 0		/* Used for lookup */
@@ -404,6 +407,7 @@ struct iked_sa {
 
 	struct iked_timer		 sa_timer;	/* SA timeouts */
 #define IKED_IKE_SA_REKEY_TIMEOUT	 300		/* 5 minutes */
+#define IKED_IKE_SA_ALIVE_TIMEOUT	 60		/* 1 minute */
 
 	struct iked_msgqueue		 sa_requests;	/* request queue */
 #define IKED_RETRANSMIT_TIMEOUT		 2		/* 2 seconds */
@@ -430,6 +434,7 @@ struct iked_message {
 
 	int			 msg_fd;
 	int			 msg_response;
+	int			 msg_responded;
 	int			 msg_natt;
 	int			 msg_error;
 	int			 msg_e;
@@ -767,6 +772,7 @@ int	 pfkey_block(int, int, u_int);
 int	 pfkey_sa_init(int, struct iked_childsa *, u_int32_t *);
 int	 pfkey_sa_add(int, struct iked_childsa *, struct iked_childsa *);
 int	 pfkey_sa_delete(int, struct iked_childsa *);
+int	 pfkey_sa_last_used(int, struct iked_childsa *, u_int64_t *);
 int	 pfkey_flush(int, u_int);
 int	 pfkey_socket(void);
 void	 pfkey_init(struct iked *, int fd);
@@ -780,16 +786,15 @@ int	 ca_setcert(struct iked *, struct iked_sahdr *, struct iked_id *,
 int	 ca_setauth(struct iked *, struct iked_sa *,
 	    struct ibuf *, enum privsep_procid);
 void	 ca_sslinit(void);
-void	 ca_sslerror(void);
+void	 ca_sslerror(const char *);
 char	*ca_asn1_name(u_int8_t *, size_t);
 char	*ca_x509_name(void *);
 
 /* timer.c */
-void	 timer_initialize(struct iked *, struct iked_timer *,
+void	 timer_set(struct iked *, struct iked_timer *,
 	    void (*)(struct iked *, void *), void *);
-int	 timer_initialized(struct iked *, struct iked_timer *);
-void	 timer_register(struct iked *, struct iked_timer *, int);
-void	 timer_deregister(struct iked *, struct iked_timer *);
+void	 timer_add(struct iked *, struct iked_timer *, int);
+void	 timer_del(struct iked *, struct iked_timer *);
 
 /* proc.c */
 void	 proc_init(struct privsep *, struct privsep_proc *, u_int);
@@ -816,7 +821,7 @@ void	 proc_flush_imsg(struct iked *, enum privsep_procid);
 void	 socket_set_blockmode(int, enum blockmodes);
 int	 socket_af(struct sockaddr *, in_port_t);
 in_port_t
-	 socket_getport(struct sockaddr_storage *);
+	 socket_getport(struct sockaddr *);
 int	 socket_getaddr(int, struct sockaddr_storage *);
 int	 socket_bypass(int, struct sockaddr *);
 int	 udp_bind(struct sockaddr *, in_port_t);
@@ -830,7 +835,7 @@ void	 lc_string(char *);
 void	 print_hex(u_int8_t *, off_t, size_t);
 void	 print_hexval(u_int8_t *, off_t, size_t);
 const char *
-	 print_bits(u_short, char *);
+	 print_bits(u_short, u_char *);
 int	 sockaddr_cmp(struct sockaddr *, struct sockaddr *, int);
 u_int8_t mask2prefixlen(struct sockaddr *);
 u_int8_t mask2prefixlen6(struct sockaddr *);
@@ -839,7 +844,7 @@ struct in6_addr *
 u_int32_t
 	 prefixlen2mask(u_int8_t);
 const char *
-	 print_host(struct sockaddr_storage *, char *, size_t);
+	 print_host(struct sockaddr *, char *, size_t);
 char	*get_string(u_int8_t *, size_t);
 const char *
 	 print_proto(u_int8_t);
@@ -871,12 +876,12 @@ void	 ibuf_zero(struct ibuf *);
 /* log.c */
 void	 log_init(int);
 void	 log_verbose(int);
-void	 log_warn(const char *, ...);
-void	 log_warnx(const char *, ...);
-void	 log_info(const char *, ...);
-void	 log_debug(const char *, ...);
-void	 print_debug(const char *, ...);
-void	 print_verbose(const char *, ...);
+void	 log_warn(const char *, ...) __attribute__((format(printf, 1, 2)));
+void	 log_warnx(const char *, ...) __attribute__((format(printf, 1, 2)));
+void	 log_info(const char *, ...) __attribute__((format(printf, 1, 2)));
+void	 log_debug(const char *, ...) __attribute__((format(printf, 1, 2)));
+void	 print_debug(const char *, ...) __attribute__((format(printf, 1, 2)));
+void	 print_verbose(const char *, ...) __attribute__((format(printf, 1, 2)));
 __dead void fatal(const char *);
 __dead void fatalx(const char *);
 
