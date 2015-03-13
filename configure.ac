@@ -581,7 +581,7 @@ if test "x$ac_cv_func_snprintf" = "xyes" ; then
 		[[
 	char b[5];
 	snprintf(b,5,"123456789");
-	exit(b[4]!='\0'); 
+	exit(b[4]!='\0');
 		]])],
 		[AC_MSG_RESULT([yes])],
 		[
@@ -868,7 +868,7 @@ if test "x$PAM_MSG" = "xyes" ; then
 				which takes only one argument to pam_strerror])
 			AC_MSG_RESULT([yes])
 			PAM_MSG="yes (old library)"
-		
+
 	])
 fi
 
@@ -989,7 +989,7 @@ fi
 AC_CACHE_CHECK([for u_int type], ac_cv_have_u_int, [
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <sys/types.h> ]],
 	[[ u_int a; a = 1;]])],
-	[ ac_cv_have_u_int="yes" ], [ ac_cv_have_u_int="no" 
+	[ ac_cv_have_u_int="yes" ], [ ac_cv_have_u_int="no"
 	])
 ])
 if test "x$ac_cv_have_u_int" = "xyes" ; then
@@ -1000,7 +1000,7 @@ fi
 AC_CACHE_CHECK([for intXX_t types], ac_cv_have_intxx_t, [
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <sys/types.h> ]],
 	[[ int8_t a; int16_t b; int32_t c; a = b = c = 1;]])],
-	[ ac_cv_have_intxx_t="yes" ], [ ac_cv_have_intxx_t="no" 
+	[ ac_cv_have_intxx_t="yes" ], [ ac_cv_have_intxx_t="no"
 	])
 ])
 if test "x$ac_cv_have_intxx_t" = "xyes" ; then
@@ -1017,7 +1017,7 @@ then
 		[
 			AC_DEFINE([HAVE_INTXX_T])
 			AC_MSG_RESULT([yes])
-		], [ AC_MSG_RESULT([no]) 
+		], [ AC_MSG_RESULT([no])
 	])
 fi
 
@@ -1034,7 +1034,7 @@ AC_CACHE_CHECK([for int64_t type], ac_cv_have_int64_t, [
 		]], [[
 int64_t a; a = 1;
 		]])],
-	[ ac_cv_have_int64_t="yes" ], [ ac_cv_have_int64_t="no" 
+	[ ac_cv_have_int64_t="yes" ], [ ac_cv_have_int64_t="no"
 	])
 ])
 if test "x$ac_cv_have_int64_t" = "xyes" ; then
@@ -1044,7 +1044,7 @@ fi
 AC_CACHE_CHECK([for u_intXX_t types], ac_cv_have_u_intxx_t, [
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <sys/types.h> ]],
 	[[ u_int8_t a; u_int16_t b; u_int32_t c; a = b = c = 1;]])],
-	[ ac_cv_have_u_intxx_t="yes" ], [ ac_cv_have_u_intxx_t="no" 
+	[ ac_cv_have_u_intxx_t="yes" ], [ ac_cv_have_u_intxx_t="no"
 	])
 ])
 if test "x$ac_cv_have_u_intxx_t" = "xyes" ; then
@@ -1059,14 +1059,14 @@ if test -z "$have_u_intxx_t" ; then
 		[
 			AC_DEFINE([HAVE_U_INTXX_T])
 			AC_MSG_RESULT([yes])
-		], [ AC_MSG_RESULT([no]) 
+		], [ AC_MSG_RESULT([no])
 	])
 fi
 
 AC_CACHE_CHECK([for u_int64_t types], ac_cv_have_u_int64_t, [
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <sys/types.h> ]],
 	[[ u_int64_t a; a = 1;]])],
-	[ ac_cv_have_u_int64_t="yes" ], [ ac_cv_have_u_int64_t="no" 
+	[ ac_cv_have_u_int64_t="yes" ], [ ac_cv_have_u_int64_t="no"
 	])
 ])
 if test "x$ac_cv_have_u_int64_t" = "xyes" ; then
@@ -1081,7 +1081,7 @@ if test -z "$have_u_int64_t" ; then
 		[
 			AC_DEFINE([HAVE_U_INT64_T])
 			AC_MSG_RESULT([yes])
-		], [ AC_MSG_RESULT([no]) 
+		], [ AC_MSG_RESULT([no])
 	])
 fi
 
@@ -1095,7 +1095,7 @@ if test -z "$have_u_intxx_t" ; then
 	uint32_t c;
 	a = b = c = 1;
 			]])],
-		[ ac_cv_have_uintxx_t="yes" ], [ ac_cv_have_uintxx_t="no" 
+		[ ac_cv_have_uintxx_t="yes" ], [ ac_cv_have_uintxx_t="no"
 		])
 	])
 	if test "x$ac_cv_have_uintxx_t" = "xyes" ; then
@@ -1111,7 +1111,7 @@ if test -z "$have_uintxx_t" ; then
 		[
 			AC_DEFINE([HAVE_UINTXX_T])
 			AC_MSG_RESULT([yes])
-		], [ AC_MSG_RESULT([no]) 
+		], [ AC_MSG_RESULT([no])
 	])
 fi
 
@@ -1138,7 +1138,7 @@ fi
 AC_CACHE_CHECK([for u_char], ac_cv_have_u_char, [
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <sys/types.h> ]],
 	[[ u_char foo; foo = 125; ]])],
-	[ ac_cv_have_u_char="yes" ], [ ac_cv_have_u_char="no" 
+	[ ac_cv_have_u_char="yes" ], [ ac_cv_have_u_char="no"
 	])
 ])
 if test "x$ac_cv_have_u_char" = "xyes" ; then
@@ -1170,7 +1170,7 @@ AC_CHECK_TYPES([in_addr_t, in_port_t], , ,
 AC_CACHE_CHECK([for size_t], ac_cv_have_size_t, [
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <sys/types.h> ]],
 	[[ size_t foo; foo = 1235; ]])],
-	[ ac_cv_have_size_t="yes" ], [ ac_cv_have_size_t="no" 
+	[ ac_cv_have_size_t="yes" ], [ ac_cv_have_size_t="no"
 	])
 ])
 if test "x$ac_cv_have_size_t" = "xyes" ; then
@@ -1180,7 +1180,7 @@ fi
 AC_CACHE_CHECK([for ssize_t], ac_cv_have_ssize_t, [
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <sys/types.h> ]],
 	[[ ssize_t foo; foo = 1235; ]])],
-	[ ac_cv_have_ssize_t="yes" ], [ ac_cv_have_ssize_t="no" 
+	[ ac_cv_have_ssize_t="yes" ], [ ac_cv_have_ssize_t="no"
 	])
 ])
 if test "x$ac_cv_have_ssize_t" = "xyes" ; then
@@ -1190,7 +1190,7 @@ fi
 AC_CACHE_CHECK([for clock_t], ac_cv_have_clock_t, [
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <time.h> ]],
 	[[ clock_t foo; foo = 1235; ]])],
-	[ ac_cv_have_clock_t="yes" ], [ ac_cv_have_clock_t="no" 
+	[ ac_cv_have_clock_t="yes" ], [ ac_cv_have_clock_t="no"
 	])
 ])
 if test "x$ac_cv_have_clock_t" = "xyes" ; then
@@ -1221,7 +1221,7 @@ fi
 AC_CACHE_CHECK([for pid_t], ac_cv_have_pid_t, [
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <sys/types.h> ]],
 	[[ pid_t foo; foo = 1235; ]])],
-	[ ac_cv_have_pid_t="yes" ], [ ac_cv_have_pid_t="no" 
+	[ ac_cv_have_pid_t="yes" ], [ ac_cv_have_pid_t="no"
 	])
 ])
 if test "x$ac_cv_have_pid_t" = "xyes" ; then
@@ -1231,7 +1231,7 @@ fi
 AC_CACHE_CHECK([for mode_t], ac_cv_have_mode_t, [
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <sys/types.h> ]],
 	[[ mode_t foo; foo = 1235; ]])],
-	[ ac_cv_have_mode_t="yes" ], [ ac_cv_have_mode_t="no" 
+	[ ac_cv_have_mode_t="yes" ], [ ac_cv_have_mode_t="no"
 	])
 ])
 if test "x$ac_cv_have_mode_t" = "xyes" ; then
@@ -1245,7 +1245,7 @@ AC_CACHE_CHECK([for struct sockaddr_storage], ac_cv_have_struct_sockaddr_storage
 #include <sys/socket.h>
 		]], [[ struct sockaddr_storage s; ]])],
 	[ ac_cv_have_struct_sockaddr_storage="yes" ],
-	[ ac_cv_have_struct_sockaddr_storage="no" 
+	[ ac_cv_have_struct_sockaddr_storage="no"
 	])
 ])
 if test "x$ac_cv_have_struct_sockaddr_storage" = "xyes" ; then
@@ -1259,7 +1259,7 @@ AC_CACHE_CHECK([for struct sockaddr_in6], ac_cv_have_struct_sockaddr_in6, [
 #include <netinet/in.h>
 		]], [[ struct sockaddr_in6 s; s.sin6_family = 0; ]])],
 	[ ac_cv_have_struct_sockaddr_in6="yes" ],
-	[ ac_cv_have_struct_sockaddr_in6="no" 
+	[ ac_cv_have_struct_sockaddr_in6="no"
 	])
 ])
 if test "x$ac_cv_have_struct_sockaddr_in6" = "xyes" ; then
@@ -1273,7 +1273,7 @@ AC_CACHE_CHECK([for struct in6_addr], ac_cv_have_struct_in6_addr, [
 #include <netinet/in.h>
 		]], [[ struct in6_addr s; s.s6_addr[0] = 0; ]])],
 	[ ac_cv_have_struct_in6_addr="yes" ],
-	[ ac_cv_have_struct_in6_addr="no" 
+	[ ac_cv_have_struct_in6_addr="no"
 	])
 ])
 if test "x$ac_cv_have_struct_in6_addr" = "xyes" ; then
@@ -1297,7 +1297,7 @@ AC_CACHE_CHECK([for struct addrinfo], ac_cv_have_struct_addrinfo, [
 #include <netdb.h>
 		]], [[ struct addrinfo s; s.ai_flags = AI_PASSIVE; ]])],
 	[ ac_cv_have_struct_addrinfo="yes" ],
-	[ ac_cv_have_struct_addrinfo="no" 
+	[ ac_cv_have_struct_addrinfo="no"
 	])
 ])
 if test "x$ac_cv_have_struct_addrinfo" = "xyes" ; then
@@ -1309,7 +1309,7 @@ AC_CACHE_CHECK([for struct timeval], ac_cv_have_struct_timeval, [
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <sys/time.h> ]],
 	[[ struct timeval tv; tv.tv_sec = 1;]])],
 	[ ac_cv_have_struct_timeval="yes" ],
-	[ ac_cv_have_struct_timeval="no" 
+	[ ac_cv_have_struct_timeval="no"
 	])
 ])
 if test "x$ac_cv_have_struct_timeval" = "xyes" ; then
@@ -1378,7 +1378,7 @@ AC_CACHE_CHECK([for __ss_family field in struct sockaddr_storage],
 #include <sys/socket.h>
 		]], [[ struct sockaddr_storage s; s.__ss_family = 1; ]])],
 	[ ac_cv_have___ss_family_in_struct_ss="yes" ],
-	[ ac_cv_have___ss_family_in_struct_ss="no" 
+	[ ac_cv_have___ss_family_in_struct_ss="no"
 	])
 ])
 if test "x$ac_cv_have___ss_family_in_struct_ss" = "xyes" ; then
@@ -1391,7 +1391,7 @@ AC_CACHE_CHECK([for pw_class field in struct passwd],
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <pwd.h> ]],
 	[[ struct passwd p; p.pw_class = 0; ]])],
 	[ ac_cv_have_pw_class_in_struct_passwd="yes" ],
-	[ ac_cv_have_pw_class_in_struct_passwd="no" 
+	[ ac_cv_have_pw_class_in_struct_passwd="no"
 	])
 ])
 if test "x$ac_cv_have_pw_class_in_struct_passwd" = "xyes" ; then
@@ -1404,7 +1404,7 @@ AC_CACHE_CHECK([for pw_expire field in struct passwd],
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <pwd.h> ]],
 	[[ struct passwd p; p.pw_expire = 0; ]])],
 	[ ac_cv_have_pw_expire_in_struct_passwd="yes" ],
-	[ ac_cv_have_pw_expire_in_struct_passwd="no" 
+	[ ac_cv_have_pw_expire_in_struct_passwd="no"
 	])
 ])
 if test "x$ac_cv_have_pw_expire_in_struct_passwd" = "xyes" ; then
@@ -1417,7 +1417,7 @@ AC_CACHE_CHECK([for pw_change field in struct passwd],
 	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ #include <pwd.h> ]],
 	[[ struct passwd p; p.pw_change = 0; ]])],
 	[ ac_cv_have_pw_change_in_struct_passwd="yes" ],
-	[ ac_cv_have_pw_change_in_struct_passwd="no" 
+	[ ac_cv_have_pw_change_in_struct_passwd="no"
 	])
 ])
 if test "x$ac_cv_have_pw_change_in_struct_passwd" = "xyes" ; then
@@ -1516,7 +1516,7 @@ AC_CACHE_CHECK([if libc defines __progname], ac_cv_libc_defines___progname, [
 	AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],
 		[[ extern char *__progname; printf("%s", __progname); ]])],
 	[ ac_cv_libc_defines___progname="yes" ],
-	[ ac_cv_libc_defines___progname="no" 
+	[ ac_cv_libc_defines___progname="no"
 	])
 ])
 if test "x$ac_cv_libc_defines___progname" = "xyes" ; then
@@ -1527,7 +1527,7 @@ AC_CACHE_CHECK([whether $CC implements __FUNCTION__], ac_cv_cc_implements___FUNC
 	AC_LINK_IFELSE([AC_LANG_PROGRAM([[ #include <stdio.h> ]],
 		[[ printf("%s", __FUNCTION__); ]])],
 	[ ac_cv_cc_implements___FUNCTION__="yes" ],
-	[ ac_cv_cc_implements___FUNCTION__="no" 
+	[ ac_cv_cc_implements___FUNCTION__="no"
 	])
 ])
 if test "x$ac_cv_cc_implements___FUNCTION__" = "xyes" ; then
@@ -1539,7 +1539,7 @@ AC_CACHE_CHECK([whether $CC implements __func__], ac_cv_cc_implements___func__, 
 	AC_LINK_IFELSE([AC_LANG_PROGRAM([[ #include <stdio.h> ]],
 		[[ printf("%s", __func__); ]])],
 	[ ac_cv_cc_implements___func__="yes" ],
-	[ ac_cv_cc_implements___func__="no" 
+	[ ac_cv_cc_implements___func__="no"
 	])
 ])
 if test "x$ac_cv_cc_implements___func__" = "xyes" ; then
@@ -1552,7 +1552,7 @@ AC_CACHE_CHECK([whether va_copy exists], ac_cv_have_va_copy, [
 va_list x,y;
 		]], [[ va_copy(x,y); ]])],
 	[ ac_cv_have_va_copy="yes" ],
-	[ ac_cv_have_va_copy="no" 
+	[ ac_cv_have_va_copy="no"
 	])
 ])
 if test "x$ac_cv_have_va_copy" = "xyes" ; then
@@ -1564,7 +1564,7 @@ AC_CACHE_CHECK([whether __va_copy exists], ac_cv_have___va_copy, [
 #include <stdarg.h>
 va_list x,y;
 		]], [[ __va_copy(x,y); ]])],
-	[ ac_cv_have___va_copy="yes" ], [ ac_cv_have___va_copy="no" 
+	[ ac_cv_have___va_copy="yes" ], [ ac_cv_have___va_copy="no"
 	])
 ])
 if test "x$ac_cv_have___va_copy" = "xyes" ; then
@@ -1576,7 +1576,7 @@ AC_CACHE_CHECK([whether getopt has optreset support],
 	AC_LINK_IFELSE([AC_LANG_PROGRAM([[ #include <getopt.h> ]],
 		[[ extern int optreset; optreset = 0; ]])],
 	[ ac_cv_have_getopt_optreset="yes" ],
-	[ ac_cv_have_getopt_optreset="no" 
+	[ ac_cv_have_getopt_optreset="no"
 	])
 ])
 if test "x$ac_cv_have_getopt_optreset" = "xyes" ; then
@@ -1735,7 +1735,7 @@ AC_ARG_WITH([sock-dir],
 	]
 )
 
-AC_DEFINE_UNQUOTED([IKED_SOCKDIR], ["$sockdir"], 
+AC_DEFINE_UNQUOTED([IKED_SOCKDIR], ["$sockdir"],
 	[Specify location of iked.sock])
 AC_SUBST([sockdir])
 
@@ -2011,7 +2011,10 @@ AC_RUN_IFELSE(
 	[
 		SSLDIR=`cat conftest.sslincdir`
 	],
-	[], [])
+	[],
+	[
+		AC_MSG_WARN([cross compiling: not checking])
+	])
 AC_MSG_RESULT([$SSLDIR])
 AC_DEFINE_UNQUOTED([SSLDIR], ["$SSLDIR"], [OpenSSL Configuration Directory])
 AC_SUBST([SSLDIR])
@@ -2352,7 +2355,7 @@ AC_CHECK_HEADER([$pfkeyv2_h], [
 #else
 			    NULL
 #endif
-			},			
+			},
 			{ "cast", "SADB_X_EALG_CAST",
 #if defined(SADB_X_EALG_CAST)
 			    "SADB_X_EALG_CAST"
@@ -2370,7 +2373,7 @@ AC_CHECK_HEADER([$pfkeyv2_h], [
 #else
 			    NULL
 #endif
-			},			
+			},
 			{ "sha2-256", "SADB_X_AALG_SHA2_256",
 #if defined(SADB_X_AALG_SHA2_256)
 			    "SADB_X_AALG_SHA2_256",
@@ -2379,7 +2382,7 @@ AC_CHECK_HEADER([$pfkeyv2_h], [
 #else
 			    NULL
 #endif
-			},			
+			},
 			{ "sha2-384", "SADB_X_AALG_SHA2_384",
 #if defined(SADB_X_AALG_SHA2_384)
 			    "SADB_X_AALG_SHA2_384",
@@ -2388,7 +2391,7 @@ AC_CHECK_HEADER([$pfkeyv2_h], [
 #else
 			    NULL
 #endif
-			},			
+			},
 			{ "sha2-512", "SADB_X_AALG_SHA2_512",
 #if defined(SADB_X_AALG_SHA2_512)
 			    "SADB_X_AALG_SHA2_512",
@@ -2397,7 +2400,7 @@ AC_CHECK_HEADER([$pfkeyv2_h], [
 #else
 			    NULL
 #endif
-			},			
+			},
 			{ NULL }
 		};
 
@@ -2440,7 +2443,10 @@ AC_CHECK_HEADER([$pfkeyv2_h], [
 	[
 		AC_MSG_RESULT([failed])
 		AC_MSG_ERROR([PFKEv2 compilation failed.])
-	], [])
+	],
+	[
+		AC_MSG_WARN([cross compiling: not checking])
+	])
 ], [], [
 #include <sys/types.h>
 #include <netinet/in.h>
