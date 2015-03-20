@@ -13,6 +13,15 @@ libpfkey_a_CPPFLAGS=	@PFKEY_CPPFLAGS@
 
 noinst_LIBRARIES=	libpfkey.a
 
+libiked_a_MAPS=		eap_map.c ikev2_map.c
+libiked_a_MAPS_IN=		eap.h ikev2.h
+libiked_a_SOURCES=		ca.c chap_ms.c config.c control.c crypto.c dh.c \
+			eap.c ikev1.c ikev2.c ikev2_msg.c ikev2_pld.c \
+			log.c policy.c proc.c timer.c util.c imsg_util.c \
+			parse.y $(iked_MAPS)
+libiked_a_CFLAGS=
+lib_LIBRARIES=	libiked.a
+
 LIBCOMPAT=	$(top_builddir)/openbsd-compat/libopenbsd-compat.a
 LDADD=		$(LIBCOMPAT) libpfkey.a
 CPPFLAGS=	-include $(top_srcdir)/openbsd-compat/includes.h \
